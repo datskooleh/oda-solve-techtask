@@ -1,0 +1,83 @@
+@Endpoint = http://localhost:5036/api
+
+###-------------------------------------Patients-----------------------------------------
+
+###Get patients
+# @name patients
+GET {{Endpoint}}/patients
+Accept: application/json
+
+
+###Get single patient
+GET {{Endpoint}}/patients/{{patients.response.body.$[0].id}}
+Accept: application/json
+
+
+### create patient
+POST {{Endpoint}}/patients
+Content-Type: application/json
+
+{
+    "firstName": "Oleh",
+    "lastName": "Datsko"
+}
+
+### update patient
+PUT {{Endpoint}}/patients
+Content-Type: application/json
+
+{
+    "id": "c9a33a68-baba-48ba-9c2d-39ca59d579c3",
+    "firstName": "OleOleh",
+    "lastName": "Datsko",
+    "rowVersion": ""
+}
+
+###Delete patient
+POST {{Endpoint}}/patients/f395e227-7f1e-48af-839f-052aa097c844/discharge
+Accept: application/json
+
+###-------------------------------------Departments-----------------------------------------
+
+###Get departments
+# @name departments
+Get {{Endpoint}}/departments
+Accept: application/json
+
+###Get department patients
+# @name deppatients
+Get {{Endpoint}}/departments/{{departments.response.body.$[1].id}}/patients
+Accept: application/json
+
+
+###Get department
+# @name departmentToEdit
+Get {{Endpoint}}/departments/{{departments.response.body.$[0].id}}
+Accept: application/json
+
+
+###Create department
+POST {{Endpoint}}/departments
+Content-Type: application/json
+
+{
+    "shortName": "IRM",
+    "longName": "Intermediate"
+}
+
+
+###Update departments
+PUT {{Endpoint}}/departments
+Content-Type: application/json
+
+{
+    "id": "9f09dce0-f0c8-4560-8a24-916ea106e981",
+    "shortName": "TestTestTestTestTestTestTestTestTest",
+    "longName": "test1",
+    "rowVersion": "/yn33BlgeAQ="
+}
+
+
+###Delete departments
+DELETE {{Endpoint}}/departments/{{departmentToEdit.response.body.$.id}}
+Accept: application/json

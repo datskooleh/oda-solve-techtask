@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Oda.HospitalManagement.API/Oda.HospitalManagement.API.csproj" />
+  <Project Path="Oda.HospitalManagement.Application/Oda.HospitalManagement.Application.csproj" Id="786cf8f1-5a41-43f6-9706-961ad8767d86" />
+  <Project Path="Oda.HospitalManagement.Domain/Oda.HospitalManagement.Domain.csproj" Id="ad14f044-0a80-43a1-9641-04cf76fe9f06" />
+  <Project Path="Oda.HospitalManagement.Infrastructure/Oda.HospitalManagement.Infrastructure.csproj" Id="e08b3aba-f611-4a39-937b-6ee9323b71f6" />
+</Solution>

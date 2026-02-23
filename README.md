@@ -1,5 +1,4 @@
-# oda-solve-techtask# oda-solve-techtask
-
+# oda-solve-techtask
 This is implementation for the technical task.
 
 Initial information:
