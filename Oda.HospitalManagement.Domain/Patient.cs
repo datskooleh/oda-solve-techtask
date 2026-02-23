@@ -28,8 +28,6 @@ namespace Oda.HospitalManagement.Domain
 
         public DateTime? DischargeDate { get; private set; }
 
-        public string Name => $"{LastName}, {FirstName}";
-
         public void Discharge(DateTime dischargeDate)
         {
             PatientValidator.EnsureDischargeIsValid(Discharged, dischargeDate, AdmissionDate);
@@ -42,31 +40,30 @@ namespace Oda.HospitalManagement.Domain
             UpdatedAt = DateTime.UtcNow;
         }
 
-        public void ChangeDepartment(Guid departmentId)
+        public void Transfer(Department department)
         {
-            if (string.IsNullOrWhiteSpace(AdmissionNumber))
-                throw new AdmissionDomainException("Can't assign patient to department without valid admission number");
+            AdmissionNumber.EnsureAdmissionNumberIsValid();
 
-            if (departmentId == Guid.Empty)
+            if (department == null || department.Id == Guid.Empty)
                 throw new AdmissionDomainException("Department does not exist");
 
-            DepartmentId = departmentId;
+            DepartmentId = department.Id;
 
             UpdatedAt = DateTime.UtcNow;
         }
 
-        public void Admit(string admissionNumber, DateTime? admissionDate, Guid departmentId)
+        public void Admit(Department department, string admissionNumber, DateTime? admissionDate)
         {
             admissionNumber = admissionNumber.Trim();
 
             admissionNumber.EnsureAdmissionNumberIsValid();
 
-            if (departmentId == Guid.Empty)
+            if (department == null || department.Id == Guid.Empty)
                 throw new AdmissionDomainException("Department does not exist");
 
             AdmissionDate = admissionDate ?? DateTime.UtcNow;
             AdmissionNumber = admissionNumber;
-            DepartmentId = departmentId;
+            DepartmentId = department.Id;
             Discharged = false;
             DischargeDate = null;
 

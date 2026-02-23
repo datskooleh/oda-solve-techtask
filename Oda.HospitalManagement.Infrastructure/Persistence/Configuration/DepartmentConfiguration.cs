@@ -27,8 +27,6 @@ namespace Oda.HospitalManagement.Infrastucture.Persistence.Configuration
             builder.HasMany(x => x.Patients)
                 .WithOne(x => x.Department)
                 .HasForeignKey(x => x.DepartmentId);
-
-            builder.Ignore(x => x.Name);
         }
     }
 }

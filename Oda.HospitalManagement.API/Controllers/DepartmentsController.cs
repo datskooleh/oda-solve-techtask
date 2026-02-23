@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
+using Oda.HospitalManagement.Application;
 using Oda.HospitalManagement.Application.DTOs;
 using Oda.HospitalManagement.Application.DTOs.Department;
-using Oda.HospitalManagement.Application.DTOs.Patient;
 using Oda.HospitalManagement.Application.Interfaces;
 
 namespace Oda.HospitalManagement.API.Controllers
@@ -13,12 +13,10 @@ namespace Oda.HospitalManagement.API.Controllers
     public class DepartmentsController : ControllerBase
     {
         private readonly IDepartmentService _departmentService;
-        private readonly IPatientService _patientService;
 
-        public DepartmentsController(IDepartmentService departmentService, IPatientService patientService)
+        public DepartmentsController(IDepartmentService departmentService)
         {
             _departmentService = departmentService;
-            _patientService = patientService;
         }
 
         [HttpGet]
@@ -94,18 +92,19 @@ namespace Oda.HospitalManagement.API.Controllers
             return TypedResults.BadRequest();
         }
 
-        [HttpPost("{id}/assignments")]
-        public async Task<Results<Ok, Ok<string>, NotFound, BadRequest>> Assign([FromBody] AdmitPatientToDepartmentDTO dto, CancellationToken cancellationToken = default)
+        [HttpPost("admissions")]
+        public async Task<Results<Ok<string>, Conflict<string>, NotFound, BadRequest<string>>> Admit([FromBody] AdmitPatientDTO dto, CancellationToken cancellationToken = default)
         {
-            var result = await _patientService.AssignAsync(dto, cancellationToken);
+            var result = await _departmentService.AssignAsync(dto, cancellationToken);
 
-            if (result.Type == Application.ResultType.NotFound)
+            if (result.Type == ResultType.NotFound)
                 return TypedResults.NotFound();
-
-            if (result.Type == Application.ResultType.Success)
+            else if(result.Type == ResultType.Conflict)
+                return TypedResults.Conflict(result.Message);
+            if (result.Type == ResultType.Success)
                 return TypedResults.Ok(result.Data);
 
-            return TypedResults.BadRequest();
+            return TypedResults.BadRequest(result.Message);
         }
     }
 }

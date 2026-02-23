@@ -66,12 +66,21 @@ namespace Oda.HospitalManagement.Infrastructure.Services
                     return new ServiceResult<GetPatientDTO>(message: "Another patient under same admission number is already registered", ResultType.Conflict);
             }
 
+            Department? department = null;
+            if (dto.DepartmentId.HasValue && dto.DepartmentId.Value != Guid.Empty)
+            {
+                department = await _dbContext.Departments
+                    .FirstOrDefaultAsync(x => dto.DepartmentId.Value == x.Id, cancellationToken);
+            }
+
             var firstName = dto.FirstName.Trim();
             var lastName = dto.LastName.Trim();
 
             var patient = new Patient(firstName, lastName);
-            if (!string.IsNullOrWhiteSpace(admissionNumber) && dto.DepartmentId.HasValue)
-                patient.Admit(admissionNumber, DateTime.UtcNow, dto.DepartmentId.Value);
+            if (string.IsNullOrWhiteSpace(admissionNumber) && department != null)
+                return new ServiceResult<GetPatientDTO>(message: "", ResultType.Conflict);
+
+            patient.Admit(department, admissionNumber, DateTime.UtcNow);
 
             var entry = await _dbContext.Patients.AddAsync(patient, cancellationToken);
             await _dbContext.SaveChangesAsync(cancellationToken);
@@ -79,44 +88,45 @@ namespace Oda.HospitalManagement.Infrastructure.Services
             return new ServiceResult<GetPatientDTO>(data: _mapper.Map<GetPatientDTO>(patient), ResultType.Success);
         }
 
-        public async Task<ServiceResult<string>> AssignAsync(AdmitPatientToDepartmentDTO dto, CancellationToken cancellationToken)
-        {
-            var admissionNumber = dto.AdmissionNumber?.Trim();
+        //public async Task<ServiceResult<string>> AssignAsync(AdmitPatientDTO dto, CancellationToken cancellationToken)
+        //{
+        //    var admissionNumber = dto.AdmissionNumber?.Trim();
 
-            if (!string.IsNullOrWhiteSpace(admissionNumber))
-            {
-                var hasAdmissionNumber = await _dbContext.Patients
-                    .AnyAsync(x => x.AdmissionNumber == admissionNumber && x.Id != dto.Id, cancellationToken);
+        //    if (!string.IsNullOrWhiteSpace(admissionNumber))
+        //    {
+        //        var hasAdmissionNumber = await _dbContext.Patients
+        //            .AnyAsync(x => x.AdmissionNumber == admissionNumber && x.Id != dto.Id, cancellationToken);
 
-                if (hasAdmissionNumber)
-                    return new ServiceResult<string>(message: "Another patient under same admission number is already registered", ResultType.Conflict);
-            }
+        //        if (hasAdmissionNumber)
+        //            return new ServiceResult<string>(message: "Another patient under same admission number is already registered", ResultType.Conflict);
+        //    }
 
-            var department = await _dbContext.Departments
-                .FirstOrDefaultAsync(x => x.Id == dto.DepartmentId, cancellationToken);
+        //    var department = await _dbContext.Departments
+        //        .FirstOrDefaultAsync(x => x.Id == dto.DepartmentId, cancellationToken);
 
-            if (department is null)
-                return new ServiceResult<string>(message: "Department does not exist", ResultType.NotFound);
+        //    if (department is null)
+        //        return new ServiceResult<string>(message: "Department does not exist", ResultType.NotFound);
 
-            var patient = await _dbContext.Patients
-                .FirstOrDefaultAsync(x => x.Id == dto.Id, cancellationToken);
+        //    var patient = await _dbContext.Patients
+        //        .FirstOrDefaultAsync(x => x.Id == dto.Id, cancellationToken);
 
-            if (patient is null)
-                return new ServiceResult<string>(message: "Patient not found", ResultType.NotFound);
+        //    if (patient is null)
+        //        return new ServiceResult<string>(message: "Patient not found", ResultType.NotFound);
+        //    else if (patient.AdmissionNumber == admissionNumber)
+        //        return new ServiceResult<string>(message: "Patient is already amissed under different number", ResultType.Conflict);
+        //    else if (patient.DepartmentId == dto.DepartmentId)
+        //        return new ServiceResult<string>("Already in same department", ResultType.Success);
 
-            if (patient.DepartmentId == dto.DepartmentId)
-                return new ServiceResult<string>("Already in same department", ResultType.Success);
+        //    if (string.IsNullOrWhiteSpace(admissionNumber))
+        //        patient.Transfer(department);
+        //    else
+        //        patient.Admit(department, admissionNumber, dto.AdmissionDate);
 
-            if (string.IsNullOrWhiteSpace(admissionNumber))
-                patient.ChangeDepartment(dto.DepartmentId);
-            else
-                patient.Admit(admissionNumber, dto.AdmissionDate, dto.DepartmentId);
+        //    patient.RowVersion = dto.RowVersion;
+        //    await _dbContext.SaveChangesAsync(cancellationToken);
 
-            patient.RowVersion = dto.RowVersion;
-            await _dbContext.SaveChangesAsync(cancellationToken);
-
-            return new ServiceResult<string>(data: null, ResultType.Success);
-        }
+        //    return new ServiceResult<string>(data: null, ResultType.Success);
+        //}
 
         public async Task<ServiceResult<string>> DischargeAsync(Guid id, CancellationToken cancellationToken)
         {
@@ -145,6 +155,24 @@ namespace Oda.HospitalManagement.Infrastructure.Services
 
             patient.Rename(dto.FirstName, dto.LastName);
             patient.RowVersion = dto.RowVersion;
+            await _dbContext.SaveChangesAsync(cancellationToken);
+
+            return new ServiceResult<GetPatientDTO>(data: _mapper.Map<GetPatientDTO>(patient), ResultType.Success);
+        }
+
+        public async Task<ServiceResult<GetPatientDTO>> TransferAsync(TransferPatientDTO dto, CancellationToken cancellationToken)
+        {
+            var patient = await _dbContext.Patients.FirstOrDefaultAsync(x => x.Id == dto.PatientId, cancellationToken);
+
+            if (patient == null)
+                return new ServiceResult<GetPatientDTO>(message: "Patient is not found", ResultType.NotFound);
+
+            var department = await _dbContext.Departments.FirstOrDefaultAsync(x => x.Id == dto.DepartmentId, cancellationToken);
+
+            if (department == null)
+                return new ServiceResult<GetPatientDTO>(message: "Department has not been found", ResultType.NotFound);
+
+            patient.Transfer(department);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             return new ServiceResult<GetPatientDTO>(data: _mapper.Map<GetPatientDTO>(patient), ResultType.Success);

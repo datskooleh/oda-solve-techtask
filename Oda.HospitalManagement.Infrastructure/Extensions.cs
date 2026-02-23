@@ -27,6 +27,7 @@ namespace Oda.HospitalManagement.Infrasturcture
                     config.ReadFrom.Configuration(configuration);
                     config.ReadFrom.Services(sp);
                     config.Enrich.FromLogContext();
+                    config.Enrich.WithThreadId();
                 });
         }
 

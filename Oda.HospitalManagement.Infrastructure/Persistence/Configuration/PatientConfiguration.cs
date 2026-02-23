@@ -26,13 +26,8 @@ namespace Oda.HospitalManagement.Infrastucture.Persistence.Configuration
             builder.Property(x => x.AdmissionNumber)
                 .HasMaxLength(PatientValidator.AdmissionNumberMaxLength);
 
-            builder.Property(x => x.AdmissionDate)
-                .IsRequired();
-
             builder.Property(x => x.Discharged)
                 .IsRequired();
-
-            builder.Ignore(x => x.Name);
         }
     }
 }

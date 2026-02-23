@@ -3,6 +3,7 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 using Oda.HospitalManagement.API;
+using Oda.HospitalManagement.API.Middleware;
 using Oda.HospitalManagement.Infrasturcture;
 using Oda.HospitalManagement.Persistence.Infrastructure;
 
@@ -63,17 +64,9 @@ try
 
     app.UseAuthorization();
 
+    app.UseMiddleware<TaskCancellationMiddleware>();
+
     app.MapControllers();
-
-    //app.MapGroup("/", ())
-    //    { }
-
-    app.Use(async (context, next) =>
-    {
-        await next();
-    });
-
-    //app.UseMiddleware<LoggerMiddleware>();
 
     await app.RunAsync();
 }

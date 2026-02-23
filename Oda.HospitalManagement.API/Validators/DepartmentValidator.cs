@@ -1,4 +1,6 @@
-﻿using FluentValidation;
+﻿using System.Text.RegularExpressions;
+
+using FluentValidation;
 
 using Oda.HospitalManagement.Application.DTOs.Department;
 
@@ -31,6 +33,21 @@ namespace Oda.HospitalManagement.API.Validators
                 .NotEmpty();
 
             RuleFor(x => x.Id).NotEqual(Guid.Empty);
+        }
+    }
+
+    public sealed class AdmitPatientValidator : AbstractValidator<AdmitPatientDTO>
+    {
+        private static readonly Regex AdmissionNumberFormat = new("^[0-9]{4,6}\\/[0-9]{1,2}");
+
+        public AdmitPatientValidator()
+        {
+            RuleFor(x => x.AdmissionNumber)
+                .MaximumLength(15)
+                .Must(x => AdmissionNumberFormat.IsMatch(x));
+
+            RuleFor(x => x.DepartmentId)
+                .NotEmpty();
         }
     }
 }

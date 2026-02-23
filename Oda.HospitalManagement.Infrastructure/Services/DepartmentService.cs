@@ -97,10 +97,6 @@ namespace Oda.HospitalManagement.Infrastructure.Services
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
             }
-            //catch (TaskCanceledException ex)
-            //{
-            //    _logger.LogWarning(ex, "Adding department '{id}' has been canceled by user", );
-            //}
             catch (Exception ex) when (ex is not TaskCanceledException && ex is not OperationCanceledException)
             {
                 _logger.LogError(ex, "Failed to save department in database");
@@ -132,10 +128,6 @@ namespace Oda.HospitalManagement.Infrastructure.Services
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
             }
-            //catch (TaskCanceledException ex)
-            //{
-            //    _logger.LogWarning(ex, "Department '{id}' deletion was cancelled by user", id);
-            //}
             catch (Exception ex) when (ex is not TaskCanceledException && ex is not OperationCanceledException)
             {
                 _logger.LogError(ex, $"Failed to delete department with unexpected error");
@@ -160,25 +152,50 @@ namespace Oda.HospitalManagement.Infrastructure.Services
             }
             catch (Exception ex) when (ex is not TaskCanceledException && ex is not OperationCanceledException)
             {
-                _logger.LogError(ex, "Unexpected on patients query");
+                _logger.LogError(ex, "Unexpected exception on patients query");
                 return new ServiceResult<List<GetDepartmentPatientDTO>>(message: "Unexpected exception", ResultType.Error);
             }
+        }
+
+        public async Task<ServiceResult<string>> AssignAsync(AdmitPatientDTO dto, CancellationToken cancellationToken)
+        {
+            var admissionNumber = dto.AdmissionNumber?.Trim();
+
+            if (admissionNumber == null)
+                return new ServiceResult<string>(message: "Admission number can't be empty", ResultType.Error);
+
+            var patient = await _dbContext.Patients
+                .FirstOrDefaultAsync(x => x.Id == dto.Id, cancellationToken);
+
+            if (patient is null)
+                return new ServiceResult<string>(message: "Patient not found", ResultType.NotFound);
+            else if (patient.AdmissionNumber == admissionNumber)
+                return new ServiceResult<string>(data: $"Patient is already admissed under same number", ResultType.Success);
+            else if (!patient.Discharged)
+                return new ServiceResult<string>(message: $"Patient is already admissed under number {patient.AdmissionNumber}", ResultType.Conflict);
+            else if (patient.DepartmentId == dto.DepartmentId)
+                return new ServiceResult<string>("Already in same department", ResultType.Success);
+
+            var department = await _dbContext.Departments
+                .FirstOrDefaultAsync(x => x.Id == dto.DepartmentId, cancellationToken);
+
+            if (department is null)
+                return new ServiceResult<string>(message: "Department does not exist", ResultType.NotFound);
+
+            patient.Admit(department, admissionNumber, dto.AdmissionDate);
+
+            patient.RowVersion = dto.RowVersion;
+            await _dbContext.SaveChangesAsync(cancellationToken);
+
+            return new ServiceResult<string>(data: null, ResultType.Success);
         }
 
         public async Task<ServiceResult<GetDepartmentDTO>> UpdateAsync(UpdateDepartmentDTO dto, CancellationToken cancellationToken)
         {
             Department? department;
 
-            //try
-            //{
             department = await _dbContext.Departments
                 .FirstOrDefaultAsync(x => x.Id == dto.Id, cancellationToken);
-            //}
-            //catch (TaskCanceledException)
-            //{
-            //    _logger.LogWarning("Department '{id}' update was cancelled by user", dto.Id);
-            //    return _cancellationTaskResult;
-            //}
 
             if (department is null)
                 return new ServiceResult<GetDepartmentDTO>(data: null, ResultType.NotFound);
@@ -189,19 +206,11 @@ namespace Oda.HospitalManagement.Infrastructure.Services
             if (department.LongName.Equals(longName)
                 || department.ShortName.Equals(shortName))
             {
-                //try
-                //{
                 var departmentExists = await _dbContext.Departments
                     .AnyAsync(x => x.Id != dto.Id && (x.LongName.Equals(longName) || x.ShortName.Equals(shortName)), cancellationToken);
 
                 if (departmentExists)
                     return new ServiceResult<GetDepartmentDTO>(message: "Department with same name already exists", ResultType.Conflict);
-                //}
-                //catch (TaskCanceledException)
-                //{
-                //    _logger.LogWarning("Department '{id}' update was cancelled by user", dto.Id);
-                //    return _cancellationTaskResult;
-                //}
             }
 
             try
@@ -211,11 +220,6 @@ namespace Oda.HospitalManagement.Infrastructure.Services
                 await _dbContext.SaveChangesAsync(cancellationToken);
                 return new ServiceResult<GetDepartmentDTO>(data: _mapping.Map<GetDepartmentDTO>(department), ResultType.Success);
             }
-            //catch (TaskCanceledException)
-            //{
-            //    _logger.LogWarning("Department '{id}' update was cancelled by user", dto.Id);
-            //    return _cancellationTaskResult;
-            //}
             catch (Exception ex) when (ex is not TaskCanceledException && ex is not OperationCanceledException)
             {
                 _logger.LogError(ex, "Department '{shortName} ({longName})' update was interrupted before save", shortName, longName);

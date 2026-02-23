@@ -1,4 +1,6 @@
-﻿using FluentValidation;
+﻿using System.Text.RegularExpressions;
+
+using FluentValidation;
 
 using Oda.HospitalManagement.Application.DTOs.Patient;
 
@@ -41,15 +43,6 @@ namespace Oda.HospitalManagement.API.Validators
             RuleFor(x => x.LastName)
                 .NotEmpty()
                 .MaximumLength(PatientValidatorLimits.MaxLastNameLength);
-        }
-    }
-
-    public sealed class AdmitPatientValidator : AbstractValidator<AdmitPatientToDepartmentDTO>
-    {
-        public AdmitPatientValidator()
-        {
-            RuleFor(x => x.AdmissionNumber)
-                .MaximumLength(15);
         }
     }
 }
