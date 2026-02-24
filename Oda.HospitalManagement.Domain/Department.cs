@@ -5,6 +5,7 @@ namespace Oda.HospitalManagement.Domain
     public sealed class Department : BaseEntity
     {
         public Department()
+            : base()
         { }
 
         public Department(Guid id)
@@ -15,9 +16,10 @@ namespace Oda.HospitalManagement.Domain
 
         public string LongName { get; private set; }
 
-        public List<Patient> Patients { get; private set; } = [];
 
-        public string Name => $"{ShortName} ({LongName})";
+        private readonly List<Patient> _patients = [];
+
+        public IReadOnlyCollection<Patient> Patients => _patients;
 
         public void Rename(string shortName, string longName)
         {
@@ -30,5 +32,7 @@ namespace Oda.HospitalManagement.Domain
             ShortName = shortName;
             LongName = longName;
         }
+
+        public string Name => $"{ShortName} ({LongName})";
     }
 }

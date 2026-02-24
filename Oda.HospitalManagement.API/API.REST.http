@@ -1,5 +1,8 @@
 @Endpoint = http://localhost:5036/api
 
+GET {{Endpoint}}/patients/pat
+Accept: application/json
+
 ###-------------------------------------Patients-----------------------------------------
 
 ###Get patients
@@ -27,14 +30,14 @@ PUT {{Endpoint}}/patients
 Content-Type: application/json
 
 {
-    "id": "c9a33a68-baba-48ba-9c2d-39ca59d579c3",
-    "firstName": "OleOleh",
+    "id": "687ea732-371a-4b3e-9b50-cb107d4e5140",
+    "firstName": "Anna",
     "lastName": "Datsko",
     "rowVersion": ""
 }
 
 ###Delete patient
-POST {{Endpoint}}/patients/f395e227-7f1e-48af-839f-052aa097c844/discharge
+POST {{Endpoint}}/patients/687ea732-371a-4b3e-9b50-cb107d4e5140/discharge
 Accept: application/json
 
 ###-------------------------------------Departments-----------------------------------------

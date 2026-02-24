@@ -6,8 +6,7 @@ namespace Oda.HospitalManagement.Domain
     public sealed class Patient : BaseEntity
     {
         public Patient(string firstName, string lastName)
-            : this(Guid.NewGuid(), firstName, lastName)
-        { }
+            : base() => Rename(firstName, lastName);
 
         public Patient(Guid id, string firstName, string lastName)
             : base(id, null) => Rename(firstName, lastName);
@@ -42,20 +41,19 @@ namespace Oda.HospitalManagement.Domain
             UpdatedAt = DateTime.UtcNow;
         }
 
-        public void ChangeDepartment(Guid departmentId)
+        public void Transfer(Department department)
         {
-            if (string.IsNullOrWhiteSpace(AdmissionNumber))
-                throw new AdmissionDomainException("Can't assign patient to department without valid admission number");
+            AdmissionNumber.EnsureAdmissionNumberIsValid();
 
-            if (departmentId == Guid.Empty)
+            if (department == null || department.Id == Guid.Empty)
                 throw new AdmissionDomainException("Department does not exist");
 
-            DepartmentId = departmentId;
+            DepartmentId = department.Id;
 
             UpdatedAt = DateTime.UtcNow;
         }
 
-        public void Admit(string admissionNumber, DateTime? admissionDate, Guid departmentId)
+        public void Admit(Guid departmentId, string admissionNumber, DateTime? admissionDate)
         {
             admissionNumber = admissionNumber.Trim();
 
