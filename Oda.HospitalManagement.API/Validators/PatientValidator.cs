@@ -44,12 +44,15 @@ namespace Oda.HospitalManagement.API.Validators
         }
     }
 
-    public sealed class AdmitPatientValidator : AbstractValidator<AdmitPatientToDepartmentDTO>
+    public sealed class TransferPatientValidator : AbstractValidator<TransferPatientDTO>
     {
-        public AdmitPatientValidator()
+        public TransferPatientValidator()
         {
-            RuleFor(x => x.AdmissionNumber)
-                .MaximumLength(15);
+            RuleFor(x => x.PatientId)
+                .NotEmpty();
+
+            RuleFor(x => x.DepartmentId)
+                .NotEmpty();
         }
     }
 }
