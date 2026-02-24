@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using Oda.HospitalManagement.Domain;
 using Oda.HospitalManagement.Domain.Validators;
@@ -27,6 +28,9 @@ namespace Oda.HospitalManagement.Infrastucture.Persistence.Configuration
             builder.HasMany(x => x.Patients)
                 .WithOne(x => x.Department)
                 .HasForeignKey(x => x.DepartmentId);
+
+            builder.Navigation(x => x.Patients)
+                .UsePropertyAccessMode(PropertyAccessMode.Field);
 
             builder.Ignore(x => x.Name);
         }

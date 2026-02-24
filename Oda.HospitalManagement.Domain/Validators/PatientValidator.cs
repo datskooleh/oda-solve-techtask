@@ -14,9 +14,12 @@ namespace Oda.HospitalManagement.Domain.Validators
 
         public static Regex AdmissionNumberFormat => new("^[0-9]{4,6}\\/[0-9]{1,2}");
 
-        internal static void EnsureAdmissionNumberIsValid(this string admissionNumber)
+        internal static void EnsureAdmissionNumberIsValid(this string? admissionNumber)
         {
-            if (string.IsNullOrWhiteSpace(admissionNumber) || admissionNumber.Length > AdmissionNumberMaxLength)
+            if(string.IsNullOrWhiteSpace(admissionNumber))
+                throw new AdmissionDomainException("Admission number is required");
+
+            if (admissionNumber.Length > AdmissionNumberMaxLength)
                 throw new AdmissionDomainException($"Admission number exceeds allowed amount of {AdmissionNumberMaxLength}");
 
             if (!AdmissionNumberFormat.IsMatch(admissionNumber))

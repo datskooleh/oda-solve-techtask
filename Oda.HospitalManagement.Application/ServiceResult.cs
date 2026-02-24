@@ -22,6 +22,12 @@
             Type = type;
         }
 
+        public ServiceResult(T? data, ResultType type, string? message = null)
+            : this(data, type)
+        {
+            Message = message;
+        }
+
         /// <summary>
         /// Data in response. Might be null in case of error. Should not be null if <see cref="ResultType.Success"/> but can be empty
         /// </summary>

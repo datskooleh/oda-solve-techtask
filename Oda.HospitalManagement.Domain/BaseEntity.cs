@@ -2,8 +2,7 @@
 {
     public abstract class BaseEntity
     {
-        protected BaseEntity()
-        { }
+        protected BaseEntity() { }
 
         protected BaseEntity(Guid id, DateTime? createdAt)
         {
@@ -13,7 +12,7 @@
                 CreatedAt = createdAt.Value;
         }
 
-        public Guid Id { get; }
+        public Guid Id { get; init; }
 
         public DateTime CreatedAt { get; }
 
