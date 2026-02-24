@@ -2,11 +2,10 @@
 
 namespace Oda.HospitalManagement.API.Middleware
 {
-    public sealed class TaskCancellationMiddleware(RequestDelegate next, ILogger<LoggerMiddleware> logger)
+    public sealed class TaskCancellationMiddleware(RequestDelegate next, ILogger<TaskCancellationMiddleware> logger)
     {
         public async Task InvokeAsync(HttpContext context)
         {
-            var stopwatch = Stopwatch.StartNew();
             try
             {
                 await next.Invoke(context);
@@ -23,14 +22,8 @@ namespace Oda.HospitalManagement.API.Middleware
             }
             catch (Exception ex)
             {
-                if (context.Response.StatusCode > 500)
-                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 logger.LogError(ex, "Unexpected exception on request");
-            }
-            finally
-            {
-                stopwatch.Stop();
-                logger.LogInformation($"Request processed in {stopwatch.Elapsed}");
             }
         }
     }

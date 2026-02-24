@@ -16,7 +16,10 @@ namespace Oda.HospitalManagement.Domain
 
         public string LongName { get; private set; }
 
-        public List<Patient> Patients { get; private set; } = [];
+
+        private readonly List<Patient> _patients = [];
+
+        public IReadOnlyCollection<Patient> Patients => _patients;
 
         public void Rename(string shortName, string longName)
         {
@@ -29,5 +32,7 @@ namespace Oda.HospitalManagement.Domain
             ShortName = shortName;
             LongName = longName;
         }
+
+        public string Name => $"{ShortName} ({LongName})";
     }
 }

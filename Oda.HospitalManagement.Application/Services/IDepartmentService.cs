@@ -7,7 +7,7 @@ namespace Oda.HospitalManagement.Application.Interfaces
     {
         Task<ServiceResult<List<GetDepartmentDTO>>> FilterAsync(FilteringParametersDTO filtering, CancellationToken cancellationToken);
 
-        Task<ServiceResult<string>> AssignAsync(AdmitPatientDTO dto, CancellationToken cancellationToken);
+        Task<ServiceResult<AdmitPatientDTO>> AssignAsync(AdmitPatientDTO dto, CancellationToken cancellationToken);
 
         Task<ServiceResult<GetDepartmentDTO>> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 

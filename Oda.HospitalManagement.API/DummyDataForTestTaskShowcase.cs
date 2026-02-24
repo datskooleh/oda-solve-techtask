@@ -7,7 +7,6 @@ namespace Oda.HospitalManagement.API
 
 #if DEBUG
 #warning This should not be enabled in DEV+ environments. keep only to local
-#warning Unreference DOMAIN and INFRASTRUCTURE from project after this one
     //only for demonstation purposes
     public static class DummyDataForTestTaskShowcase
     {
@@ -58,22 +57,23 @@ namespace Oda.HospitalManagement.API
 
             var addedDepartments = dbContext.ChangeTracker.Entries<Domain.Department>()
                 .Where(x => x.State == EntityState.Added)
-                .Select(x => x.Entity);
+                .Select(x => x.Entity)
+                .ToArray();
 
             var rand = new Random();
             var patients = new Domain.Patient[]
             {
-        GetDummyAdmissionedPatient("Leon", "Müller", "4821/92", DateTime.UtcNow.AddDays(-rand.Next(15)), addedDepartments.First()),
-        GetDummyAdmissionedPatient("Sophie", "Schmidt", "1503/44", DateTime.UtcNow.AddDays(-rand.Next(15)), addedDepartments.Skip(1).First()),
-        GetDummyAdmissionedPatient("Noah", "Schneider", "7291/18", DateTime.UtcNow.AddDays(-rand.Next(15)), addedDepartments.Skip(2).First()),
-        GetDummyAdmissionedPatient("Mia", "Fischer  ", "3367/56", DateTime.UtcNow.AddDays(-rand.Next(15)), addedDepartments.Skip(3).First()),
-        GetDummyAdmissionedPatient("Paul", "Weber", "9012/31", DateTime.UtcNow.AddDays(-rand.Next(15)), addedDepartments.Skip(3).First()),
-        GetDummyAdmissionedPatient("Emma", "Meyer", "2485/77", DateTime.UtcNow.AddDays(-rand.Next(15)), addedDepartments.Skip(4).First()),
-        GetDummyAdmissionedPatient("Elias", "Wagner", "6134/20", DateTime.UtcNow.AddDays(-rand.Next(15)), addedDepartments.Skip(4).First()),
-        GetDummyAdmissionedPatient("Hanna", "Becker", "8840/63", DateTime.UtcNow.AddDays(-rand.Next(15)), addedDepartments.Skip(4).First()),
-        GetDummyAdmissionedPatient("Marie", "Hoffmann", "5219/85", DateTime.UtcNow.AddDays(-rand.Next(15)), addedDepartments.Skip(5).First()),
-        GetDummyAdmissionedPatient("Luis", "Schäfer", "1076/12", DateTime.UtcNow.AddDays(-rand.Next(15)), addedDepartments.First()),
-        GetDummyAdmissionedPatient("Emilia", "Koch", "3958/49", DateTime.UtcNow.AddDays(-rand.Next(15)), addedDepartments.First()),
+        GetDummyAdmissionedPatient("Leon", "Müller", "4821/92", DateTime.UtcNow.AddDays(-rand.Next(15)), addedDepartments[0]),
+        GetDummyAdmissionedPatient("Sophie", "Schmidt", "1503/44", DateTime.UtcNow.AddDays(-rand.Next(15)), addedDepartments[1]),
+        GetDummyAdmissionedPatient("Noah", "Schneider", "7291/18", DateTime.UtcNow.AddDays(-rand.Next(15)), addedDepartments[2]),
+        GetDummyAdmissionedPatient("Mia", "Fischer  ", "3367/56", DateTime.UtcNow.AddDays(-rand.Next(15)), addedDepartments[3]),
+        GetDummyAdmissionedPatient("Paul", "Weber", "9012/31", DateTime.UtcNow.AddDays(-rand.Next(15)), addedDepartments[3]),
+        GetDummyAdmissionedPatient("Emma", "Meyer", "2485/77", DateTime.UtcNow.AddDays(-rand.Next(15)), addedDepartments[4]),
+        GetDummyAdmissionedPatient("Elias", "Wagner", "6134/20", DateTime.UtcNow.AddDays(-rand.Next(15)), addedDepartments[4]),
+        GetDummyAdmissionedPatient("Hanna", "Becker", "8840/63", DateTime.UtcNow.AddDays(-rand.Next(15)), addedDepartments[4]),
+        GetDummyAdmissionedPatient("Marie", "Hoffmann", "5219/85", DateTime.UtcNow.AddDays(-rand.Next(15)), addedDepartments[5]),
+        GetDummyAdmissionedPatient("Luis", "Schäfer", "1076/12", DateTime.UtcNow.AddDays(-rand.Next(15)), addedDepartments[0]),
+        GetDummyAdmissionedPatient("Emilia", "Koch", "3958/49", DateTime.UtcNow.AddDays(-rand.Next(15)), addedDepartments[1]),
         GetDummyDischargedPatient("Jonas", "Schulz", DateTime.UtcNow.AddDays(-5)),
             };
 
@@ -92,7 +92,7 @@ namespace Oda.HospitalManagement.API
             {
                 var patient = new Domain.Patient(Guid.NewGuid(), firstName, lastName);
                 patient.Rename(firstName, lastName);
-                patient.Admit(department, admissionNumber, admissionDate);
+                patient.Admit(department.Id, admissionNumber, admissionDate);
                 return patient;
             }
 

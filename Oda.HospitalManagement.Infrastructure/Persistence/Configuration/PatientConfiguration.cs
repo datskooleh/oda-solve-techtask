@@ -28,6 +28,9 @@ namespace Oda.HospitalManagement.Infrastucture.Persistence.Configuration
 
             builder.Property(x => x.Discharged)
                 .IsRequired();
+
+            builder.HasIndex(x => new { x.AdmissionNumber, x.DepartmentId })
+                .IsUnique();
         }
     }
 }

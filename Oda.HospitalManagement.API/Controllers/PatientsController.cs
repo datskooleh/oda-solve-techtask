@@ -66,13 +66,15 @@ namespace Oda.HospitalManagement.API.Controllers
             return TypedResults.BadRequest();
         }
 
-        [HttpPost]
-        public async Task<Results<Ok, NotFound>> Transfer([FromBody] TransferPatientDTO dto, CancellationToken cancellationToken)
+        [HttpPost("transfer")]
+        public async Task<Results<Ok, NotFound<string>, BadRequest<string>>> Transfer([FromBody] TransferPatientDTO dto, CancellationToken cancellationToken)
         {
             var result = await _patientService.TransferAsync(dto, cancellationToken);
 
             if (result.Type == ResultType.NotFound)
-                return TypedResults.NotFound();
+                return TypedResults.NotFound(result.Message);
+            if (result.Type == ResultType.Error)
+                return TypedResults.BadRequest(result.Message);
 
             return TypedResults.Ok();
         }

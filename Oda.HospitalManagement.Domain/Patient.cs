@@ -6,8 +6,7 @@ namespace Oda.HospitalManagement.Domain
     public sealed class Patient : BaseEntity
     {
         public Patient(string firstName, string lastName)
-            : this(Guid.NewGuid(), firstName, lastName)
-        { }
+            : base() => Rename(firstName, lastName);
 
         public Patient(Guid id, string firstName, string lastName)
             : base(id, null) => Rename(firstName, lastName);
@@ -27,6 +26,8 @@ namespace Oda.HospitalManagement.Domain
         public Department? Department { get; private set; }
 
         public DateTime? DischargeDate { get; private set; }
+
+        public string Name => $"{LastName}, {FirstName}";
 
         public void Discharge(DateTime dischargeDate)
         {
@@ -52,18 +53,18 @@ namespace Oda.HospitalManagement.Domain
             UpdatedAt = DateTime.UtcNow;
         }
 
-        public void Admit(Department department, string admissionNumber, DateTime? admissionDate)
+        public void Admit(Guid departmentId, string admissionNumber, DateTime? admissionDate)
         {
             admissionNumber = admissionNumber.Trim();
 
             admissionNumber.EnsureAdmissionNumberIsValid();
 
-            if (department == null || department.Id == Guid.Empty)
+            if (departmentId == Guid.Empty)
                 throw new AdmissionDomainException("Department does not exist");
 
             AdmissionDate = admissionDate ?? DateTime.UtcNow;
             AdmissionNumber = admissionNumber;
-            DepartmentId = department.Id;
+            DepartmentId = departmentId;
             Discharged = false;
             DischargeDate = null;
 
