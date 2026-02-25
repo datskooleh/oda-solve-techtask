@@ -144,7 +144,7 @@ namespace Oda.HospitalManagement.Infrastructure.Services
             if (department == null)
                 return new ServiceResult<GetPatientDTO>(message: "Department has not been found", ResultType.NotFound);
 
-            patient.Transfer(department);
+            patient.Transfer(department.Id);
             patient.RowVersion = dto.RowVersion;
             await _dbContext.SaveChangesAsync(cancellationToken);
 

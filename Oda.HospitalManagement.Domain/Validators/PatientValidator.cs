@@ -10,9 +10,9 @@ namespace Oda.HospitalManagement.Domain.Validators
 
         public static int LastNameMaxLength => 50;
 
-        public static int AdmissionNumberMaxLength => 15;
+        public static int AdmissionNumberMaxLength => 9;
 
-        public static Regex AdmissionNumberFormat => new("^[0-9]{4,6}\\/[0-9]{1,2}");
+        public static Regex AdmissionNumberFormat => new("^[0-9]{4,6}\\/[0-9]{1,2}$");
 
         internal static void EnsureAdmissionNumberIsValid(this string? admissionNumber)
         {
@@ -35,6 +35,9 @@ namespace Oda.HospitalManagement.Domain.Validators
                 throw new DischargeDomainException("Patient is already discharged");
 
             if (dischargeDate < admissionDate)
+                throw new DischargeDomainException("Discharge date should not be latern than admission date");
+
+            if (dischargeDate > DateTime.UtcNow.AddMinutes(1))
                 throw new DischargeDomainException("Discharge date should not be latern than admission date");
         }
     }

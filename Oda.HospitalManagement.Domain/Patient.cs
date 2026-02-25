@@ -41,14 +41,14 @@ namespace Oda.HospitalManagement.Domain
             UpdatedAt = DateTime.UtcNow;
         }
 
-        public void Transfer(Department department)
+        public void Transfer(Guid departmentId)
         {
             AdmissionNumber.EnsureAdmissionNumberIsValid();
 
-            if (department == null || department.Id == Guid.Empty)
+            if (departmentId == Guid.Empty)
                 throw new AdmissionDomainException("Department does not exist");
 
-            DepartmentId = department.Id;
+            DepartmentId = departmentId;
 
             UpdatedAt = DateTime.UtcNow;
         }
@@ -73,8 +73,8 @@ namespace Oda.HospitalManagement.Domain
 
         public void Rename(string firstName, string lastName)
         {
-            firstName = firstName.Trim();
-            lastName = lastName.Trim();
+            firstName = firstName?.Trim();
+            lastName = lastName?.Trim();
 
             firstName.EnsureValidName(nameof(FirstName), PatientValidator.FirstNameMaxLength);
             lastName.EnsureValidName(nameof(LastName), PatientValidator.LastNameMaxLength);
