@@ -8,6 +8,7 @@ namespace Oda.HospitalManagement.API.Validators
     {
         internal static int MaxFirstNameLength = 50;
         internal static int MaxLastNameLength = 50;
+        internal static int MaxAdmissionNumberLength = 9;
     }
 
     public sealed class CreatePatientValidator : AbstractValidator<CreatePatientDTO>
@@ -23,7 +24,7 @@ namespace Oda.HospitalManagement.API.Validators
                 .MaximumLength(PatientValidatorLimits.MaxLastNameLength);
 
             RuleFor(x => x.AdmissionNumber)
-                .MaximumLength(15);
+                .MaximumLength(PatientValidatorLimits.MaxAdmissionNumberLength);
         }
     }
 

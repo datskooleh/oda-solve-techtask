@@ -33,6 +33,8 @@ namespace Oda.HospitalManagement.Domain
             LongName = longName;
         }
 
-        public string Name => $"{ShortName} ({LongName})";
+        public string Name => string.IsNullOrWhiteSpace(ShortName)
+            ? string.Empty
+            : $"{ShortName} ({LongName})";
     }
 }

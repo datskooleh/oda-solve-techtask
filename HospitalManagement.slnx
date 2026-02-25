@@ -1,4 +1,9 @@
 <Solution>
+  <Folder Name="/Tests/" />
+  <Folder Name="/Tests/UnitTests/">
+    <Project Path="Tests/UnitTests/Oda.HospitalManagement.APITests/Oda.HospitalManagement.APITests.csproj" Id="977e503c-e099-4a72-ab16-9c7a7ee50b9c" />
+    <Project Path="Tests/UnitTests/Oda.HospitalManagement.Domain.Tests/Oda.HospitalManagement.DomainTests.csproj" />
+  </Folder>
   <Project Path="Oda.HospitalManagement.API/Oda.HospitalManagement.API.csproj" />
   <Project Path="Oda.HospitalManagement.Application/Oda.HospitalManagement.Application.csproj" Id="786cf8f1-5a41-43f6-9706-961ad8767d86" />
   <Project Path="Oda.HospitalManagement.Domain/Oda.HospitalManagement.Domain.csproj" Id="ad14f044-0a80-43a1-9641-04cf76fe9f06" />
